@@ -1,0 +1,34 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    	match /mail/{document=**}{
+      allow read, write, create;
+      }
+  		match /beginner_project/{document=**}{
+      allow read, write, create;
+      }
+      match /user_information/{userId} {
+      allow create: if true;
+    }
+     match /lessons/{document=**}{
+      allow read, write, create;
+      }
+      match /user_information/{userId} {
+      allow create: if true;
+    }
+    match /user_information/{document=**} {
+    // user can read & write their own information (username, tagline)
+      allow read, write, create:
+      if request.auth != null && 
+      (request.auth.uid == resource.id || request.auth.token.email == resource.id);
+      //user can read & write their projects information (name, hostname, username, etc.)
+      match /projects/{projectID}{
+      allow read, write, create;
+      	match /buttonList/{buttonID}{
+      	allow read, write, create;
+      }
+      }
+    }
+  }
+}
